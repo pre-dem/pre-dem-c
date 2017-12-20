@@ -11,6 +11,8 @@ static char g_app_key[64];
 
 static char g_app_id[9];
 
+static int inited = 0;
+
 #define SDK_VERSION "0.0.1"
 
 static const char* g_UA = "PREDEM-C/"SDK_VERSION;
@@ -66,6 +68,7 @@ static cJSON* build_event(const char *name, const char* json_string, const PREDE
 }
 
 void predem_curl_init(const char* domain, const char* app_key) {
+    inited = 1;
     memset(g_domain, 0, sizeof(g_domain));
     memset(g_app_key, 0, sizeof(g_app_key));
     memset(g_app_id, 0, sizeof(g_app_id));
@@ -79,6 +82,9 @@ PREDEM_CURL_CODE predem_curl_send_event(const char *name, const char* json_strin
     CURLcode res;
     struct curl_slist *list = NULL;
     char url_buff[512];
+    if (inited == 0) {
+        return PREDEM_CURL_NOT_INIT;
+    }
 
     /* get a curl handle */ 
     curl = curl_easy_init();
