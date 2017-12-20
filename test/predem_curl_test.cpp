@@ -4,15 +4,20 @@
 
 #include "cJSON.h"
 
+#include <curl/curl.h>
+
 #include <stdio.h>
 #include <string.h>
 
 TEST_GROUP(PREDEMCURL){
     void setup(){
+        curl_global_init(CURL_GLOBAL_ALL);
         predem_curl_init("http://bhk5aaghth5n.predem.qiniuapi.com", "B0vM04UGNMWbSSWsECKYgFlN");
     }
 
-    void teardown(){}};
+    void teardown(){
+        curl_global_cleanup();
+    }};
 
 TEST(PREDEMCURL, connect) {
     PREDEM_EnvInfo* info = (PREDEM_EnvInfo*)malloc(sizeof(PREDEM_EnvInfo));
