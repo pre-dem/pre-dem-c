@@ -34,6 +34,7 @@ if is_mode("debug", "check", "coverage") then
     -- enable coverage
     if is_mode("coverage") then
         add_cxflags("--coverage")
+        add_cxflags("-ftest-coverage")
         add_mxflags("--coverage")
         add_ldflags("--coverage")
     end
