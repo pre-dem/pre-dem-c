@@ -28,4 +28,4 @@ before_script:
 script:
   #- xmake f -m debug
   - xmake
-  - valgrind -v --suppressions=./valgrind.suppressions --error-exitcode=42 ./build/run_all_tests 
+  - valgrind -v --suppressions=./valgrind.suppressions --run-libc-freeres=no --error-exitcode=42 ./build/run_all_tests 
