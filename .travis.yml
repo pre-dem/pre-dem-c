@@ -1,0 +1,31 @@
+sudo: required
+language: Cpp
+os:
+  - linux
+  # - osx
+compiler:
+  - clang
+  - gcc
+
+install:
+  - git clone --branch=dev https://github.com/waruqi/xmake.git waruqi/xmake
+  - cd ./waruqi/xmake
+  - sudo ./install
+  - cd -
+  # - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
+addons:
+  apt:
+    # sources:
+    # - ubuntu-toolchain-r-test
+    packages:
+    # - gcc-4.8
+    # - g++-4.8
+    # - clang
+    - valgrind
+
+before_script:
+  - sh ./install_cpputest.sh
+script:
+  #- xmake f -m debug
+  - xmake
+  - valgrind --error-exitcode=42 ./build/run_all_tests
