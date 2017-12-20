@@ -86,14 +86,14 @@ PREDEM_CURL_CODE predem_curl_send_event(const char *name, const char* json_strin
         return PREDEM_CURL_NOT_INIT;
     }
 
+    if (json_string == NULL || name == NULL || info == NULL) {
+        return PREDEM_CURL_INVALID_DATA;
+    }
+
     /* get a curl handle */ 
     curl = curl_easy_init();
     if (curl == NULL ) {
         return PREDEM_CURL_NO_MEMORY;
-    }
-
-    if (json_string == NULL || name == NULL || info == NULL) {
-        return PREDEM_CURL_INVALID_DATA;
     }
 
     memset(url_buff, 0, sizeof(url_buff));
