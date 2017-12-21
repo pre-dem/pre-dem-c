@@ -13,7 +13,7 @@ static char g_app_id[9];
 
 static int inited = 0;
 
-#define SDK_VERSION "0.0.1"
+#define SDK_VERSION "0.1.0"
 
 static const char* g_UA = "PREDEM-C/"SDK_VERSION;
 
@@ -24,7 +24,72 @@ static int has_http(char* domain){
     return 0;
 }
 
-static cJSON* build_event(const char *name, const char* json_string, const PREDEM_EnvInfo* const info){
+#define STRINGLEN 64
+
+typedef struct PREDEM_EnvInfo {
+    char app_name[STRINGLEN];
+    char app_version[STRINGLEN]; 
+
+    char device_model[STRINGLEN];
+    char manufacturer[STRINGLEN];
+    char device_id[STRINGLEN];   
+                      
+    char os_platform[STRINGLEN];
+    char os_version[STRINGLEN]; 
+
+    char sdk_id[STRINGLEN];
+    char tag[STRINGLEN];
+} PREDEM_EnvInfo;
+
+static PREDEM_EnvInfo info = {};
+
+void predem_curl_set_env(const char *app_name,
+  const char *app_version, 
+  const char *device_model,
+  const char *manufacturer, 
+  const char *device_id,   
+  const char *os_platform,
+  const char *os_version, 
+  const char *sdk_id,
+  const char *tag) {
+    if (app_name != NULL) {
+        strncpy(info.app_name, app_name, STRINGLEN-1);
+    }
+
+    if (app_version != NULL) {
+        strncpy(info.app_version, app_version, STRINGLEN-1);
+    }
+
+    if (device_model != NULL) {
+        strncpy(info.device_model, device_model, STRINGLEN-1);
+    }
+
+    if (manufacturer != NULL) {
+        strncpy(info.manufacturer, manufacturer, STRINGLEN-1);
+    }
+
+    if (device_id != NULL) {
+        strncpy(info.device_id, device_id, STRINGLEN-1);
+    }
+
+    if (os_platform != NULL) {
+        strncpy(info.os_platform, os_platform, STRINGLEN-1);
+    }
+
+    if (os_version != NULL) {
+        strncpy(info.os_version, os_version, STRINGLEN-1);
+    }
+
+    if (sdk_id != NULL) {
+        strncpy(info.sdk_id, sdk_id, STRINGLEN-1);
+    }
+
+    if (tag != NULL) {
+        strncpy(info.tag, tag, STRINGLEN-1);
+    }
+}
+
+static cJSON* build_event(const char *name, const char* json_string){
     cJSON *root = cJSON_CreateObject();
     cJSON_AddStringToObject(root, "content", json_string);
     cJSON_AddStringToObject(root, "name", name);
@@ -32,36 +97,40 @@ static cJSON* build_event(const char *name, const char* json_string, const PREDE
     cJSON_AddStringToObject(root, "app_bundle_id", "embed_system");
     cJSON_AddStringToObject(root, "sdk_version", SDK_VERSION);
 
-    if (info->app_name != NULL) {
-        cJSON_AddStringToObject(root, "app_name", info->app_name);
+    if (info.app_name[0] != '\0') {
+        cJSON_AddStringToObject(root, "app_name", info.app_name);
     }
 
-    if (info->app_version != NULL) {
-        cJSON_AddStringToObject(root, "app_version", info->app_version);
+    if (info.app_version[0] != '\0') {
+        cJSON_AddStringToObject(root, "app_version", info.app_version);
     }
 
-    if (info->device_model != NULL) {
-        cJSON_AddStringToObject(root, "device_model", info->device_model);
+    if (info.device_model[0] != '\0') {
+        cJSON_AddStringToObject(root, "device_model", info.device_model);
     }
 
-    if (info->manufacturer != NULL) {
-        cJSON_AddStringToObject(root, "manufacturer", info->manufacturer);
+    if (info.manufacturer[0] != '\0') {
+        cJSON_AddStringToObject(root, "manufacturer", info.manufacturer);
     }
 
-    if (info->device_id != NULL) {
-        cJSON_AddStringToObject(root, "device_id", info->device_id);
+    if (info.device_id[0] != '\0') {
+        cJSON_AddStringToObject(root, "device_id", info.device_id);
     }
 
-    if (info->os_platform != NULL) {
-        cJSON_AddStringToObject(root, "os_platform", info->os_platform);
+    if (info.os_platform[0] != '\0') {
+        cJSON_AddStringToObject(root, "os_platform", info.os_platform);
     }
 
-    if (info->os_version != NULL) {
-        cJSON_AddStringToObject(root, "os_version", info->os_version);
+    if (info.os_version[0] != '\0') {
+        cJSON_AddStringToObject(root, "os_version", info.os_version);
     }
 
-    if (info->tag != NULL) {
-        cJSON_AddStringToObject(root, "tag", info->tag);
+    if (info.sdk_id[0] != '\0') {
+        cJSON_AddStringToObject(root, "sdk_id", info.sdk_id);
+    }
+
+    if (info.tag[0] != '\0') {
+        cJSON_AddStringToObject(root, "tag", info.tag);
     }
 
     return root;
@@ -77,7 +146,7 @@ void predem_curl_init(const char* domain, const char* app_key) {
     memcpy(g_app_id, app_key, 8);
 }
 
-PREDEM_CURL_CODE predem_curl_send_event(const char *name, const char* json_string, const PREDEM_EnvInfo* const info){
+PREDEM_CURL_CODE predem_curl_send_event(const char *name, const char* json_string){
     CURL *curl;
     CURLcode res;
     struct curl_slist *list = NULL;
@@ -86,7 +155,7 @@ PREDEM_CURL_CODE predem_curl_send_event(const char *name, const char* json_strin
         return PREDEM_CURL_NOT_INIT;
     }
 
-    if (json_string == NULL || name == NULL || info == NULL) {
+    if (json_string == NULL || name == NULL) {
         return PREDEM_CURL_INVALID_DATA;
     }
 
@@ -115,7 +184,7 @@ PREDEM_CURL_CODE predem_curl_send_event(const char *name, const char* json_strin
  
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, list);
 
-    cJSON* event = build_event(name, json_string, info);
+    cJSON* event = build_event(name, json_string);
 
     const char* c = cJSON_PrintUnformatted(event);
 

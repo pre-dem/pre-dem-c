@@ -20,53 +20,19 @@ TEST_GROUP(PREDEMCURL){
     }};
 
 TEST(PREDEMCURL, connect) {
-    PREDEM_EnvInfo* info = (PREDEM_EnvInfo*)malloc(sizeof(PREDEM_EnvInfo));
-    info->app_name = "sdktest";
-    info->app_version = "0.0.1";
-    info->device_model = "arm";
-    info->manufacturer = "qiniu";
-    info->device_id = "abcdef";
-    info->os_platform = "macos";
-    info->os_version = "999";
-    info->tag = __FILE__;
+    predem_curl_set_env("sdktest", "0.0.1", "arm", "qiniu", "abcdef", "macos", "999", NULL, __FILE__);
 
     cJSON* obj = cJSON_CreateObject();
-    cJSON_AddStringToObject(obj, "test", "GOGOGO");
+    cJSON_AddStringToObject(obj, "test", "GOGOGO-VIC");
 
     const char* c = cJSON_PrintUnformatted(obj);
 
-    int res = predem_curl_send_event("testsend", c, info);
+    int res = predem_curl_send_event("testsend", c);
     if (res != PREDEM_CURL_OK) {
         printf("code %d\n", res);
         FAIL("send event failed");
     }
 
-    free(info);
     cJSON_free((void*)c);
     cJSON_Delete(obj);
 }
-
-// TEST_GROUP(SOCKET){
-//     void setup(){}
-
-//     void teardown(){}};
-
-// TEST(SOCKET, create) {
-//     net_address ai = NULL;
-//     int r = net_getaddrinfo("www.baidu.com", 80, SOCK_TCP, &ai);
-//     LONGS_EQUAL(0, r);
-//     if (ai == NULL) {
-//         FAIL("get addrinfo NULL");
-//         return;
-//     }
-//     struct sock_ret ret = socket_addrinfo_new(ai);
-//     if (ret.value <= 0) {
-//         printf("%d\n", ret.error_code);
-//         FAIL("create socket failed");
-//     } else {
-//         socket_close(ret.value);
-//     }
-
-//     net_freeaddrinfo(ai);
-//     return;
-// }
