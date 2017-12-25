@@ -13,7 +13,7 @@ static char g_app_id[9];
 
 static int inited = 0;
 
-#define SDK_VERSION "0.1.0"
+#define SDK_VERSION "0.2.0"
 
 static const char* g_UA = "PREDEM-C/"SDK_VERSION;
 
@@ -26,7 +26,7 @@ static int has_http(char* domain){
 
 #define STRINGLEN 64
 
-typedef struct PREDEM_EnvInfo {
+typedef struct PREDEM_EnvInfo_Internal {
     char app_name[STRINGLEN];
     char app_version[STRINGLEN]; 
 
@@ -39,53 +39,45 @@ typedef struct PREDEM_EnvInfo {
 
     char sdk_id[STRINGLEN];
     char tag[STRINGLEN];
-} PREDEM_EnvInfo;
+} PREDEM_EnvInfo_Internal;
 
-static PREDEM_EnvInfo info = {};
+static PREDEM_EnvInfo_Internal info = {};
 
-void predem_curl_set_env(const char *app_name,
-  const char *app_version, 
-  const char *device_model,
-  const char *manufacturer, 
-  const char *device_id,   
-  const char *os_platform,
-  const char *os_version, 
-  const char *sdk_id,
-  const char *tag) {
-    if (app_name != NULL) {
-        strncpy(info.app_name, app_name, STRINGLEN-1);
+void predem_curl_set_env(PREDEM_EnvInfo inf) {
+    if (inf.app_name != NULL) {
+        strncpy(info.app_name, inf.app_name, STRINGLEN-1);
     }
 
-    if (app_version != NULL) {
-        strncpy(info.app_version, app_version, STRINGLEN-1);
+    if (inf.app_version != NULL) {
+        strncpy(info.app_version, inf.app_version, STRINGLEN-1);
     }
 
-    if (device_model != NULL) {
-        strncpy(info.device_model, device_model, STRINGLEN-1);
+    if (inf.device_model != NULL) {
+        strncpy(info.device_model, inf.device_model, STRINGLEN-1);
     }
 
-    if (manufacturer != NULL) {
-        strncpy(info.manufacturer, manufacturer, STRINGLEN-1);
+    if (inf.manufacturer != NULL) {
+        strncpy(info.manufacturer, inf.manufacturer, STRINGLEN-1);
     }
 
-    if (device_id != NULL) {
-        strncpy(info.device_id, device_id, STRINGLEN-1);
+    if (inf.device_id != NULL) {
+        strncpy(info.device_id, inf.device_id, STRINGLEN-1);
     }
 
-    if (os_platform != NULL) {
-        strncpy(info.os_platform, os_platform, STRINGLEN-1);
+    if (inf.os_platform != NULL) {
+        strncpy(info.os_platform, inf.os_platform, STRINGLEN-1);
     }
 
-    if (os_version != NULL) {
-        strncpy(info.os_version, os_version, STRINGLEN-1);
+    if (inf.os_version != NULL) {
+        strncpy(info.os_version, inf.os_version, STRINGLEN-1);
     }
 
-    if (sdk_id != NULL) {
-        strncpy(info.sdk_id, sdk_id, STRINGLEN-1);
+    if (inf.sdk_id != NULL) {
+        strncpy(info.sdk_id, inf.sdk_id, STRINGLEN-1);
     }
 
-    if (tag != NULL) {
-        strncpy(info.tag, tag, STRINGLEN-1);
+    if (inf.tag != NULL) {
+        strncpy(info.tag, inf.tag, STRINGLEN-1);
     }
 }
 

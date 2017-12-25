@@ -20,7 +20,8 @@ TEST_GROUP(PREDEMCURL){
     }};
 
 TEST(PREDEMCURL, connect) {
-    predem_curl_set_env("sdktest", "0.0.1", "arm", "qiniu", "abcdef", "macos", "999", "{sdk_id}", "{user_id}");
+    PREDEM_EnvInfo info = {"sdktest", "0.0.1", "arm", "qiniu", "abcdef", "macos", "999", "{sdk_id}", "{user_id}"};
+    predem_curl_set_env(info);
 
     cJSON* obj = cJSON_CreateObject();
     cJSON_AddStringToObject(obj, "test", "GOGOGO-VIC");
